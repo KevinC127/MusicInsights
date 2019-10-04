@@ -3,8 +3,9 @@ title: "MusicInsights"
 author: "Kevin Chen"
 output:
   html_document:
-  df_print: paged
+  word_document: default
   pdf_document: default
+  df_print: paged
 ---
 First, we need tidyverse to handle data importing and wrangling...
 
