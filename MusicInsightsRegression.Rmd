@@ -1,0 +1,66 @@
+---
+title: "Music Insight Regression"
+author: "Kevin Chen"
+output:
+  html_document: default
+  word_document: default
+  pdf_document: default
+  df_print: paged
+---
+
+
+
+```{r}
+include <- function(library_name){
+  if( !(library_name %in% installed.packages()) )
+    install.packages(library_name) 
+  library(library_name, character.only=TRUE)
+}
+
+include("dplyr")
+include("caret")
+include("tidyverse")
+include("knitr")
+include("ggplot2")
+purl("MusicInsights.Rmd", output = "part1.r")
+source("part1.r")
+```
+import all of the music insight files
+
+```{r}
+Person$average_rating <-sapply(Person$pseudonym,
+      function(name){ 
+        hold1 <- Charts$Rating[Charts$pseudonym == name] 
+        average <-mean(hold1)
+        return(average)
+      }
+    )
+
+#view(average_rating)
+```
+This take the average of all the rating for each Person pseudonym
+
+```{r}
+Person<-na.omit(Person)
+#Person$time_submitted <- NULL
+```
+This remove all NA because the createDataPartition dont work with missing value or NA.
+The commit out section was trying to remove time_submitted for train_model to fix certain issue but didnt work.
+
+```{r}
+set.seed(385)
+sample_selection <- createDataPartition(Person$average_rating, p = 0.75, list = FALSE)
+train <- Person[sample_selection]
+test <- Person[-sample_selection]
+
+train_model <- lm(Person, formual = average_rating ~ sex + acacdemic_level + Major)
+
+```
+In this R code the createDataPartition work as intented but wasnt able to get the random sample set due to an error "Error: Must use a vector in `[`, not an object of class matrix.". The same is said with the train_model as it was able to run but has extra argument the effect the final result.(The train_model only run if you commit out train and test R code)
+
+```{r}
+summary(train_model)
+```
+Trying to get a visual of train_model. If you run the code by skipping train and test part of R code by commenting it out you get as shown with time_submitted seeming to polluted the data. Overall not able to get much.
+
+
